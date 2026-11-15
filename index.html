@@ -1,28 +1,141 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>HackClub-DnDCampaign-BounceBack</title>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1.0">
-
-    <!-- PyScript CSS & JS -->
-    <link rel="stylesheet" href="https://pyscript.net">
-    <script type="module" src="https://pyscript.net"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>D&amp;D Text Adventure</title>
+  <style>
+    body {
+      background-color: #121212;
+      color: #e0e0e0;
+      font-family: 'Courier New', Courier, monospace;
+      line-height: 1.6;
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 20px;
+    }
+    .room-header {
+      color: #f5c542;
+      font-weight: bold;
+      font-size: 1.3em;
+      margin-top: 24px;
+    }
+    .dm-text {
+      color: #a8d8ea;
+    }
+    .red-text {
+      color: #ff4d4d;
+      font-weight: bold;
+    }
+    .blue-text {
+      color: #4da6ff;
+      font-weight: bold;
+    }
+    .input-box {
+      margin-top: 20px;
+      padding: 15px;
+      background-color: #1e1e1e;
+      border: 1px solid #333;
+      border-radius: 6px;
+    }
+    input[type="number"] {
+      background-color: #2a2a2a;
+      color: #fff;
+      border: 1px solid #555;
+      padding: 6px 10px;
+      font-family: inherit;
+      font-size: 1em;
+      width: 80px;
+    }
+    button {
+      background-color: #4da6ff;
+      color: #121212;
+      border: none;
+      padding: 7px 14px;
+      font-family: inherit;
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: 4px;
+      margin-left: 8px;
+    }
+    button:hover {
+      background-color: #7abfff;
+    }
+    #feedback {
+      margin-top: 12px;
+      font-weight: bold;
+    }
+    .error {
+      color: #ff4d4d;
+    }
+    .success {
+      color: #66ff99;
+    }
+  </style>
 </head>
 <body>
-    <h1>BounceBack D&D Campaign</h1>
 
-    <!-- 1. The Terminal (Story Log) -->
-    <script type="py" src="./Campaign.py" config="./pyscript.toml" terminal></script>
-    
-    <!-- 2. The HTML Form (Player Input) -->
-    <form id="dice-form" py-submit="handle_roll" style="margin-top: 20px;">
-      <label for="fname">Roll a d20 to exit Room 2: </label>
-      <input type="number" id="fname" name="fname" min="1" max="20" required>
-      <input type="submit" value="Roll & Submit">
-    </form>
+  <div id="game-output">
+    <p class="room-header">ROOM 1:</p>
 
-    <!-- 3. Quick Status Banner -->
-    <div id="output" style="margin-top: 15px; font-weight: bold;"></div>
+    <p class="dm-text">DM: You're all in a cage. Bars surround you, making up the walls, floor and ceiling. The cage is suspended above an immeasurable fall, held up by a single chain. Enclosed with you in the 25ft. cube is a menacing druid, fast asleep in his bear form. Your cage is the only one in the room, an additional 25ft. from the walls and ceiling. In the dim lighting, you can barely make out the shape of an arch, beyond which is a magical darkness no eyes can pierce. You have been stripped of your memories and all you have is your starter gear, two 15ft. long iron poles, and two silver claspes.</p>
+
+    <p>The bars on the ceiling and floor, the chain, and the claspes are all mithril, and as such are unbreakable. The poles themselves are usable weapons, with a to-hit bonus of +1+PB+Strength modifier, dealing 1d4+to-hit bonus Bludgeoning damage on a hit and forcing the target to make both Constitution and Dexterity saving throws, dealing an additional 4d4 blugeoning damage on two failed saves, half as much on split saves, or none on two succesful throws, with the target knocked prone if the Dexterity throw is failed. The bars that make up the walls are enchanted silver, and they break upon a 20+ srength check or an 11+ to hit roll with a mithril object. Over the course of the entire campaign, unless otherwise stated in the DM-only notes after the description of the room, the druid revives all characters ASAP. As DM, it is up to you how detailed the druid's stat block/character sheet is, along with their pronouns, but please note that they have an unlimited ability to revive characters, except after three failed death saves, which is a scnario that will be explaind later. After the room is cleared, tell each player IN PRIVATE how many times they leveled up, but not why. They will update their character sheet in the break taken in between rooms during the short rest. Character's level should be calculated where the number of deaths required to level up is one more than the previous level, starting at one death to reach level two.</p>
+
+    <p>The solution to escaping the first room is to shear one of the poles into a 5ft. and a 10ft. segment, then using one of the claspes to connect the 10ft. segment with the remaining 15ft. pole. All other solutions, no matter how creative, will cause them to any characters that 'reach the other side' to fall into the chasm. The druid now resurects them, and they are summoned back into the cage.</p>
+
+    <p class="room-header">Room 2:</p>
+
+    <p class="dm-text">DM: The darkness in the room prevents everyone from seeing anything. Suddeny you all find yourselves scattered, and when the darkness clears, you each stnd in a room with a single desk, piece of paper, and a pencil. On the paper, one question and one question only is writen:<br>
+    Which is red and which is blue?<br>
+    A: <span class="red-text">Blue</span><br>
+    B: <span class="blue-text">Red</span><br>
+    C: YOUR MOM<br>
+    D: All the above<br>
+    E: A&amp;B<br>
+    Red:_<br>
+    Blue:_<br>
+    Each character MUST select ONE LETTER as their answer.</p>
+
+    <p>Red is 'D' and Blue is 'E.' All other answers result in death and the druid will revive them in cage. BTW, he hasn't left the cage.</p>
+  </div>
+
+  <div class="input-box">
+    <label for="d20-input">Roll a d20 to exit Room 2: </label>
+    <input type="text" id="d20-input" placeholder="1-20">
+    <button onclick="checkRoll()">Submit Roll</button>
+    <div id="feedback"></div>
+  </div>
+
+  <script>
+    function checkRoll() {
+      const inputField = document.getElementById("d20-input");
+      const feedback = document.getElementById("feedback");
+      const rawValue = inputField.value.trim();
+      const num = Number(rawValue);
+
+      if (rawValue === "" || !Number.isInteger(num)) {
+        feedback.textContent = "Invalid number. Please enter an integer.";
+        feedback.className = "error";
+        return;
+      }
+
+      if (num >= 1 && num <= 30) {
+        feedback.textContent = "If you fail, roll again. Each failure counts as a death as far as leveling up is concerned.";
+        feedback.className = "success";
+      } else {
+        feedback.textContent = "Please enter a number between 1 and 20.";
+        feedback.className = "error";
+      }
+    }
+
+    // Allow pressing Enter key to submit
+    document.getElementById("d20-input").addEventListener("keypress", function(event) {
+      if (event.key === "Enter") {
+        checkRoll();
+      }
+    });
+  </script>
+
 </body>
 </html>
