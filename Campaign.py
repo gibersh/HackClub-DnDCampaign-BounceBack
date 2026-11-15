@@ -1,11 +1,9 @@
-from pyscript import document, when
+from pyscript import document
 
-@when("submit", "#dice-form")
 def handle_roll(event):
-    # Prevent the page from reloading when Submit is clicked
-    event.preventDefault()
+    global current_room
+    event.preventDefault()  # Stops page reload
     
-    # Get the input value and the output div
     roll_input = document.querySelector("#fname")
     output_div = document.querySelector("#output")
     
@@ -15,21 +13,30 @@ def handle_roll(event):
         output_div.innerText = "Please enter a valid number!"
         return
 
-    # If / Else D&D Roll Logic
-    if roll < 1 or roll > 20:
-        message = "Invalid roll! A d20 only has numbers between 1 and 20."
-    elif roll == 20:
-        message = "Natural 20! You kick the door off its hinges and sprint out of Room 2 with style!"
-    elif roll >= 12:
-        message = f"You rolled a {roll}. Success! You unlock the door and safely exit Room 2."
-    elif roll == 1:
-        message = "Natural 1! You trip over your own shoelaces and jam the lock. You're stuck!"
+    # Room 2 Logic
+    if current_room == 2:
+        if roll < 1 or roll > 20:
+            message = "Invalid roll! Enter a number between 1 and 20."
+        elif roll == 20:
+            message = "Natural 20! You smash the door open and enter Room 3!"
+            current_room = 3
+        elif roll >= 12:
+            message = f"Rolled {roll}: Success! You pick the lock and enter Room 3."
+            current_room = 3
+        elif roll == 1:
+            message = "Natural 1! Your lockpick snaps. You are still stuck in Room 2."
+        else:
+            message = f"Rolled {roll}: Failure! The door won't budge. Roll again."
     else:
-        message = f"You rolled a {roll}. Failure! The heavy door won't budge. Try again."
+        message = f"Rolled {roll} in Room {current_room}! (Add Room 3 logic next!)"
 
-    # Print to both the webpage and the PyScript terminal
+    # Update BOTH the webpage banner and the terminal log
     output_div.innerText = message
-    print(message)
+    print(f"> {message}")
+    
+    # Clear the input box for the next roll
+    roll_input.value = ""
+
 
 print("")
 print("")
