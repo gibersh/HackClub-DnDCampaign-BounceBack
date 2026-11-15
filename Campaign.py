@@ -23,14 +23,5 @@ print("Each character MUST select ONE LETTER as their answer.")
 print("")
 print("Red is 'D' and Blue is 'E.' All other answers result in death and the druid will revive them in cage. BTW, he hasn't left the cage.")
 print("")
-while True:
-    try:
-        num = int(input("Roll a d20 to exit Room 2: "))
-        if 1 <= num <= 30:
-            break
-        else:
-            print("Please enter a number between 1 and 20.")
-    except ValueError:
-        print("Invalid number. Please enter an integer.")
 print("")
 print("If you fail, roll again. Each failure counts as a death as far as leveling up is concerned.")
