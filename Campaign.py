@@ -26,24 +26,24 @@ print("")
 num = int(input("Roll a d20 to exit Room 2: "))
 if num == 1:
     print("Fail")
-  elif num == 2:
+elif num == 2:
     print("Fail")
-  elif num == 3:
+elif num == 3:
     print("Fail")
-  elif num == 4:
+elif num == 4:
     print("Fail")
-  elif num == 5:
+elif num == 5:
     print("Fail")
-  elif num == 6:
+elif num == 6:
     print("Fail")
-  elif num == 7:
+elif num == 7:
     print("Fail")
-  elif num == 8:
+elif num == 8:
     print("Fail")
-  elif num == 9:
+elif num == 9:
     print("Fail")
-  elif num == 10:
+elif num == 10:
     print("Fail")
-  else:
+else:
     print("Succeed")
 print("If you fail, roll again. Each failure counts as a death as far as leveling up is concerned.")
