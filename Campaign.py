@@ -1,3 +1,34 @@
+@when("submit", "#dice-form")
+def handle_roll(event):
+    # Prevent the page from reloading when Submit is clicked
+    event.preventDefault()
+    
+    # Get the input value and the output div
+    roll_input = document.querySelector("#fname")
+    output_div = document.querySelector("#output")
+    
+    try:
+        roll = int(roll_input.value)
+    except ValueError:
+        output_div.innerText = "Please enter a valid number!"
+        return
+
+    # If / Else D&D Roll Logic
+    if roll < 1 or roll > 20:
+        message = "Invalid roll! A d20 only has numbers between 1 and 20."
+    elif roll == 20:
+        message = "Natural 20! You kick the door off its hinges and sprint out of Room 2 with style!"
+    elif roll >= 12:
+        message = f"You rolled a {roll}. Success! You unlock the door and safely exit Room 2."
+    elif roll == 1:
+        message = "Natural 1! You trip over your own shoelaces and jam the lock. You're stuck!"
+    else:
+        message = f"You rolled a {roll}. Failure! The heavy door won't budge. Try again."
+
+    # Print to both the webpage and the PyScript terminal
+    output_div.innerText = message
+    print(message)
+
 print("")
 print("")
 print("ROOM 1:")
