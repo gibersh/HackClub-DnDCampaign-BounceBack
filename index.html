@@ -1,19 +1,41 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <title>HackClub-DnDCampaign-BounceBack</title>
-
-    <!-- Recommended meta tags -->
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1.0">
-
-    <!-- PyScript CSS -->
-    <link rel="stylesheet" href="https://pyscript.net/releases/2026.3.1/core.css">
-
-    <!-- This script tag bootstraps PyScript -->
-    <script type="module" src="https://pyscript.net/releases/2026.3.1/core.js"></script>
+    <title>PyScript d20 Roll</title>
+    <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css">
+    <script defer src="https://pyscript.net/latest/pyscript.js"></script>
 </head>
 <body>
-    <script type="py" src="./Campaign.py" config="./pyscript.toml" terminal></script>
+    <h2>Roll a d20 to exit Room 2</h2>
+
+    <!-- Input field for number -->
+    <input id="roll_input" type="number" min="1" max="20" placeholder="Enter a number between 1 and 20">
+    <button id="roll_button">Submit</button>
+
+    <!-- Output area -->
+    <div id="output"></div>
+
+    <py-script>
+from js import document
+
+def check_roll(event):
+    output = document.getElementById("output")
+    roll_value = document.getElementById("roll_input").value
+
+    try:
+        num = int(roll_value)
+
+        if 1 <= num <= 20:
+            output.innerHTML = f"You rolled {num}. Exiting Room 2..."
+            # Disable button after success
+            document.getElementById("roll_button").disabled = True
+        else:
+            output.innerHTML = "Please enter a number between 1 and 20."
+    except ValueError:
+        output.innerHTML = "Invalid input. Please enter an integer."
+
+# Attach click event to button
+document.getElementById("roll_button").addEventListener("click", check_roll)
+    </py-script>
 </body>
 </html>
