@@ -1,3 +1,5 @@
+from pyscript import document, when
+
 @when("submit", "#dice-form")
 def handle_roll(event):
     # Prevent the page from reloading when Submit is clicked
