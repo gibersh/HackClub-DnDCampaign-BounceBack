@@ -2,24 +2,27 @@
 <html lang="en">
 <head>
     <title>HackClub-DnDCampaign-BounceBack</title>
-
-    <!-- Recommended meta tags -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
 
-    <!-- PyScript CSS -->
-    <link rel="stylesheet" href="https://pyscript.net/releases/2026.3.1/core.css">
-
-    <!-- This script tag bootstraps PyScript -->
-    <script type="module" src="https://pyscript.net/releases/2026.3.1/core.js"></script>
+    <!-- PyScript CSS & JS -->
+    <link rel="stylesheet" href="https://pyscript.net">
+    <script type="module" src="https://pyscript.net"></script>
 </head>
 <body>
+    <h1>BounceBack D&D Campaign</h1>
+
+    <!-- 1. The Terminal (Story Log) -->
     <script type="py" src="./Campaign.py" config="./pyscript.toml" terminal></script>
     
-     <form id="dice-form">
+    <!-- 2. The HTML Form (Player Input) -->
+    <form id="dice-form" py-submit="handle_roll" style="margin-top: 20px;">
       <label for="fname">Roll a d20 to exit Room 2: </label>
-      <input type="number" id="fname" name="fname" min="1" max="20" required><br><br>
-      <input type="submit" value="Submit">
+      <input type="number" id="fname" name="fname" min="1" max="20" required>
+      <input type="submit" value="Roll & Submit">
     </form>
+
+    <!-- 3. Quick Status Banner -->
+    <div id="output" style="margin-top: 15px; font-weight: bold;"></div>
 </body>
 </html>
