@@ -1,106 +1,95 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title></title>HackClub-DnDCampaign-BounceBack</title>
-  
-    <link rel="stylesheet" href="https://jsdelivr.net" />
+    <meta charset="utf-8">
+    <title>Campaign</title>
     <script src="https://jsdelivr.net"></script>
-    <script src="https://jsdelivr.net"></script>
-    
-    <link rel="stylesheet" href="https://pyscript.net" />
-    <script type="module" src="https://pyscript.net"></script>
-
     <style>
         body {
-            background-color: #121212;
-            margin: 0;
+            background: #000;
+            color: #eee;
+            font-family: "Courier New", Courier, monospace;
+            font-size: 16px;
             padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+            margin: 0;
+            min-height: 100vh;
             box-sizing: border-box;
+            cursor: text;
         }
-        #terminal-container {
-            width: 100%;
-            max-width: 900px;
-            height: 85vh;
-            background-color: #000;
-            padding: 12px;
-            border-radius: 8px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.7);
-            border: 1px solid #333;
+        #output { white-space: pre-wrap; line-height: 1.4; }
+        #input-line { display: none; margin-top: 4px; }
+        input {
+            background: transparent;
+            color: #0f0;
+            border: none;
+            outline: none;
+            font-family: inherit;
+            font-size: inherit;
+            width: 50%;
         }
     </style>
 </head>
-<body>
+<body onclick="document.getElementById('user-input').focus()">
 
-<div id="terminal-container"></div>
+<div id="output">Loading Python...</div>
+<div id="input-line">
+    <span id="prompt"></span><input id="user-input" type="text" autocomplete="off">
+</div>
 
-<!-- SharedArrayBuffer bridge for synchronous Python input() in a Worker -->
 <script>
-    const term = new Terminal({
-        cursorBlink: true,
-        fontFamily: '"Courier New", Courier, monospace',
-        fontSize: 15,
-        theme: { background: '#000000', foreground: '#f0f0f0' }
-    });
-    const fitAddon = new FitAddon.FitAddon();
-    term.loadAddon(fitAddon);
-    term.open(document.getElementById('terminal-container'));
-    fitAddon.fit();
-    window.addEventListener('resize', () => fitAddon.fit());
+    const out = document.getElementById("output");
+    const inputLine = document.getElementById("input-line");
+    const promptSpan = document.getElementById("prompt");
+    const userInput = document.getElementById("user-input");
 
-    // Expose terminal write and blocking input to the PyScript Worker
-    window.termWrite = (text) => {
-        term.write(text.replace(/\n/g, '\r\n'));
-    };
+    function write(text) {
+        const html = text
+            .replace(/&/g, "&amp;").replace(/</g, "&lt;")
+            .replace(/\x1b\[31m/g, '<span style="color:#ff5555">')
+            .replace(/\x1b\[34m/g, '<span style="color:#5555ff">')
+            .replace(/\x1b\[0m/g, '</span>');
+        out.innerHTML += html;
+        window.scrollTo(0, document.body.scrollHeight);
+    }
 
-    window.termReadLine = (promptText) => {
+    window.browserInput = (promptText = "") => {
         return new Promise((resolve) => {
-            if (promptText) window.termWrite(promptText);
-            let line = '';
-            const disposable = term.onData(data => {
-                const code = data.charCodeAt(0);
-                if (code === 13) {
-                    term.write('\r\n');
-                    disposable.dispose();
-                    resolve(line);
-                } else if (code === 127) {
-                    if (line.length > 0) {
-                        line = line.slice(0, -1);
-                        term.write('\b \b');
-                    }
-                } else if (code >= 32) {
-                    line += data;
-                    term.write(data);
+            promptSpan.textContent = promptText;
+            inputLine.style.display = "block";
+            userInput.value = "";
+            userInput.focus();
+
+            userInput.onkeydown = (e) => {
+                if (e.key === "Enter") {
+                    const val = userInput.value;
+                    inputLine.style.display = "none";
+                    write(promptText + val + "\n");
+                    resolve(val);
                 }
-            });
+            };
         });
     };
+
+    async function run() {
+        try {
+            const response = await fetch("./Campaign.py");
+            if (!response.ok) throw new Error(`Could not find ./Campaign.py (HTTP ${response.status})`);
+            let code = await response.text();
+
+            const pyodide = await loadPyodide();
+            out.innerHTML = "";
+
+            pyodide.setStdout({ batched: (msg) => write(msg + "\n") });
+            pyodide.globals.set("input", window.browserInput);
+
+            code = code.replace(/\binput\s*\(/g, "await input(");
+            await pyodide.runPythonAsync(code);
+        } catch (err) {
+            out.innerHTML = `<span style="color:#ff5555">Error: ${err.message}\n\nMake sure you are running a local server (python -m http.server 8000) and opening http://localhost:8000 instead of double-clicking index.html.</span>`;
+        }
+    }
+
+    run();
 </script>
-
-<!-- PyScript config to hook up I/O before Campaign.py executes -->
-<script type="py" worker>
-import builtins
-from pyscript import window, sync
-
-def custom_print(*args, sep=' ', end='\n', **kwargs):
-    text = sep.join(str(a) for a in args) + end
-    window.termWrite(text)
-
-def custom_input(prompt=""):
-    # Uses PyScript's worker sync bridge to pause synchronously until Enter is pressed
-    return sync.termReadLine(str(prompt))
-
-builtins.print = custom_print
-builtins.input = custom_input
-</script>
-
-<!-- Load and run your external Campaign.py file in the same worker -->
-<script type="py" src="./Campaign.py" worker></script>
-
 </body>
 </html>
